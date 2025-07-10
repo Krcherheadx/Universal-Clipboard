@@ -2,6 +2,7 @@ package dev.hisham.universal_clipboard.controller;
 
 import dev.hisham.universal_clipboard.model.Clip;
 import dev.hisham.universal_clipboard.repository.ClipsCollectionRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@CrossOrigin()
 @RestController //This annotation tells the IoC to regist the class as a bean
 @RequestMapping("/clips") //This anno. to map the request of path "/clips" to this controller
 public class ClipsController {
@@ -31,16 +33,23 @@ public class ClipsController {
     @GetMapping("{id}")
     public Clip findClipById(@PathVariable String id) {
 
-        return repository.getClipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Check the id"));
+        return repository.getClipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.ACCEPTED, "Check the id"));
     }
 
     //Same as nest.js in terms of annotations
     //Note that private modifier is meant to limit other classes accessing,BUT, it doesn't make the endpoint private ( it doesn't make any sense)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    private Object test(@RequestBody Clip clip) {
+    private Object test(@Valid @RequestBody Clip clip) {
         System.out.println(clip);
         List<Clip> clips = repository.addClip(clip);
         return clips;
+    }
+
+    //I'll just try if double pathvariable (params) are legit in spring
+    //It works!, hmm , I think the way that Spring deals with the paths is by splitting the path by "/", that means if you send a req. with a path /clips/Hisham , it will go to the endpoint that has one variable, BUT if the name is somehow "Hisham/sw" the below endpoint will be triggered. In nest.js/exprees.js the order of the endpoints matter ,but it seems in Spring the opposite. So, PAY ATTENTION !
+    @GetMapping("{name}/{text}")
+    public String twoVaraibles(@PathVariable String name, @PathVariable String text) {
+        return name + "  " + text;
     }
 }

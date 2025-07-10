@@ -3,9 +3,9 @@ package dev.hisham.universal_clipboard.controller;
 import dev.hisham.universal_clipboard.model.Clip;
 import dev.hisham.universal_clipboard.repository.ClipsCollectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -27,4 +27,20 @@ public class ClipsController {
         return repository.getClips();
     }
 
+    //This the way to have a dynamic path
+    @GetMapping("{id}")
+    public Clip findClipById(@PathVariable String id) {
+
+        return repository.getClipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Check the id"));
+    }
+
+    //Same as nest.js in terms of annotations
+    //Note that private modifier is meant to limit other classes accessing,BUT, it doesn't make the endpoint private ( it doesn't make any sense)
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("")
+    private Object test(@RequestBody Clip clip) {
+        System.out.println(clip);
+        List<Clip> clips = repository.addClip(clip);
+        return clips;
+    }
 }

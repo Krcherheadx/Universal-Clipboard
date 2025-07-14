@@ -21,10 +21,7 @@ export default function DashboardPage() {
       webSocketFactory: () => socket as any,
       reconnectDelay: 5000,
       onConnect: () => {
-        client.publish({
-          destination: "/app/greeting",
-          body: JSON.stringify({ name: "Hisham" }),
-        });
+     
         client.subscribe("/topic/clips", (message) => {
           if (message.body) {
             const data: { content: string; createdAt: Date; id: string } =

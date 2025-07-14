@@ -1,7 +1,9 @@
 package dev.hisham.universal_clipboard;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class Application {
@@ -13,6 +15,11 @@ public class Application {
 
         //Hint: you can print all beans using following code
 //        Arrays.stream(context.getBeanDefinitionNames()).forEach(System.out::println);
+    }
+    //Below method will run after  injecting all the dependencies
+    @Bean
+    CommandLineRunner commandLineRunner() {
+    return args -> System.out.println("Hello World!");
     }
 
 }

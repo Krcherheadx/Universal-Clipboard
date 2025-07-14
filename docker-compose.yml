@@ -1,0 +1,13 @@
+
+services:
+  db:
+    image: mysql:8.0.42
+    container_name: clipboard-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: clipboard
+      MYSQL_USER: hisham
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"

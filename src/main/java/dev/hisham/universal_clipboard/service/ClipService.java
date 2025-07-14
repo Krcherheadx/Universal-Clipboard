@@ -35,4 +35,7 @@ public class ClipService {
         clipRepository.save(clipModel);
         return new ResCreateClipDTO(clipModel.getCreated_at(), clipModel.getId(), clipModel.getContent());
     }
+    public List<ResCreateClipDTO> retrieveAllClips()  {
+       return clipRepository.findAll().stream().map(res -> new ResCreateClipDTO(res.getCreated_at(), res.getId(), res.getContent())).toList();
+    }
 }

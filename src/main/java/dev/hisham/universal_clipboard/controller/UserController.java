@@ -14,6 +14,7 @@ public class UserController {
 
     private final UserService userService;
 
+
     public UserController(UserService userService) {
 
         this.userService = userService;
@@ -24,5 +25,5 @@ public class UserController {
     public UserModel createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         return userService.createUser(createUserDTO);
     }
-    
+
 }

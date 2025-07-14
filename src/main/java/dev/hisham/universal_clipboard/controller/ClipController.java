@@ -50,6 +50,7 @@ public class ClipController {
         return clipService.createClip(createClipDTO);
 
     }
+    
 
     @MessageMapping("/greeting")
     public void consoleWelcom(@Payload Map<String, String> name) {

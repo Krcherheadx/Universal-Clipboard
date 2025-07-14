@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -26,5 +28,10 @@ public class UserService {
         }
         UserModel userModel = new UserModel(createUserDTO.username(), createUserDTO.password());
         return userRepository.save(userModel);
+    }
+
+    public List<UserModel> saveAllUsers(List<UserModel> userModels) {
+        System.out.println("REACHED");
+        return userRepository.saveAll(userModels);
     }
 }

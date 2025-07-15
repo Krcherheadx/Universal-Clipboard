@@ -1,36 +1,26 @@
 package dev.hisham.universal_clipboard.service;
 
 
+import dev.hisham.universal_clipboard.config.JwtService;
+import dev.hisham.universal_clipboard.dto.AuthenticationResponseDTO;
 import dev.hisham.universal_clipboard.dto.CreateUserDTO;
 import dev.hisham.universal_clipboard.model.UserModel;
 import dev.hisham.universal_clipboard.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+public AuthenticationResponseDTO signup(CreateUserDTO signupDto) {
+   UserModel user = UserModel.builder().username(signupDto.username()).password(passwordEncoder.encode(signupDto.password())).build();
+   userRepository.save(user);
+   var jwtToken = jwtService.generateJwtToken(user);
+   return AuthenticationResponseDTO.builder().token(jwtToken).build();
+}
 
-    @Autowired
-    UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public UserModel createUser(CreateUserDTO createUserDTO) {
-        //Check if there's an existing user holds the same username
-
-        if (userRepository.findByUsername(createUserDTO.username()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username not found");
-        }
-//        UserModel userModel = new UserModel(createUserDTO.username(), createUserDTO.password());
-//        return userRepository.save(userModel);
-    }
-
-    public List<UserModel> saveAllUsers(List<UserModel> userModels) {
-        return userRepository.saveAll(userModels);
-    }
 }

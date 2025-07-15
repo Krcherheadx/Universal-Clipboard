@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-class JwtService {
-
-    private static final String REMOVED="""".toUpperCase();
+public class JwtService {
+@Value("${REMOVED}")
+    private static final String REMOVED;
 public String extarctUsername (String jwtToken){
 
 return extractClaims(jwtToken,Claims::getSubject);

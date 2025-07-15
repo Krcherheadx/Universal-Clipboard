@@ -8,12 +8,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 //@CrossOrigin()
 @RestController //This annotation tells the IoC to register the class as a bean
@@ -41,7 +37,7 @@ public class ClipController {
     }
 
     //TODO : implement authentication, deletion of the clip
-    //I'll implement a websocket destination that will broadcast the incoming message
+
     @MessageMapping("/add")
     @SendTo("/topic/clips")
     public ResCreateClipDTO addClip(@Valid @Payload CreateClipDTO createClipDTO, SimpMessageHeaderAccessor headerAccessor) {//user_id
@@ -50,35 +46,6 @@ public class ClipController {
         return clipService.createClip(createClipDTO);
 
     }
-    
-
-    @MessageMapping("/greeting")
-    public void consoleWelcom(@Payload Map<String, String> name) {
-        System.out.println(name.get("name"));
-    }
 
 
-    //This the way to have a dynamic path
-//    @GetMapping("{id}")
-//    public ClipDTO findClipById(@PathVariable String id) {
-//
-//        return repository.getClipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.ACCEPTED, "Check the id"));
-//    }
-
-    //Same as nest.js in terms of annotations
-    //Note that private modifier is meant to limit other classes accessing,BUT, it doesn't make the endpoint private ( it doesn't make any sense)
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @PostMapping("")
-//    private Object test(@Valid @RequestBody ClipDTO clipDTO) {
-//        System.out.println(clipDTO);
-//        List<ClipDTO> clipDTOS = repository.addClip(clipDTO);
-//        return clipDTOS;
-//    }
-
-    //I'll just try if double pathvariable (params) are legit in spring
-    //It works!, hmm , I think the way that Spring deals with the paths is by splitting the path by "/", that means if you send a req. with a path /clips/Hisham , it will go to the endpoint that has one variable, BUT if the name is somehow "Hisham/sw" the below endpoint will be triggered. In nest.js/exprees.js the order of the endpoints matter ,but it seems in Spring the opposite. So, PAY ATTENTION !
-    @GetMapping("{name}/{text}")
-    public String twoVaraibles(@PathVariable String name, @PathVariable String text) {
-        return name + "  " + text;
-    }
 }

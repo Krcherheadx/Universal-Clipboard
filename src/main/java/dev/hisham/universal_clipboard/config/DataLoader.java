@@ -22,19 +22,12 @@ public class DataLoader implements CommandLineRunner {
         this.userService = userService;
     }
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args)  {
         //read from the file then store users, ensures that websockt bug will not appear
         //it's called try-with-resource
         try(InputStream inputStream = TypeReference.class.getResourceAsStream("/data/DUMMY-USERS.json")){
-            List<UserModel> users= userService.saveAllUsers(objectMapper.readValue(inputStream, new TypeReference<List<UserModel>>() {
-            }));
-            users.stream().forEach(user ->{
-                System.out.println("-------------------------------");
-                System.out.println(user.getId());
-                System.out.println(user.getUsername());
-                System.out.println("-------------------------------");
+            List<UserModel> users= userService.saveAllUsers(objectMapper.readValue(inputStream, new TypeReference<List<UserModel>>(){}));
 
-            });
 
         } catch (Exception e) {
             throw new RuntimeException(e);

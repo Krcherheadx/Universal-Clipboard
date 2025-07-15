@@ -26,12 +26,11 @@ public class UserService {
         if (userRepository.findByUsername(createUserDTO.username()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username not found");
         }
-        UserModel userModel = new UserModel(createUserDTO.username(), createUserDTO.password());
-        return userRepository.save(userModel);
+//        UserModel userModel = new UserModel(createUserDTO.username(), createUserDTO.password());
+//        return userRepository.save(userModel);
     }
 
     public List<UserModel> saveAllUsers(List<UserModel> userModels) {
-        System.out.println("REACHED");
         return userRepository.saveAll(userModels);
     }
 }

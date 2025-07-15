@@ -17,8 +17,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-@Value("${REMOVED}")
-    private static final String REMOVED;
+@Value("${SECRET_KEY}:m")
+    private static  String SECRET_KEY;
 public String extarctUsername (String jwtToken){
 
 return extractClaims(jwtToken,Claims::getSubject);
@@ -41,7 +41,7 @@ private Claims extractAllClaims(String jwtToken){
     return Jwts.parser().setSigningKey(getSignedKey()).build().parseClaimsJws(jwtToken).getBody();
 }
 public Key getSignedKey(){
-    byte[] keyBytes = Decoders.BASE64.decode(JwtService.REMOVED);
+    byte[] keyBytes = Decoders.BASE64.decode(JwtService.SECRET_KEY);
     return Keys.hmacShaKeyFor(keyBytes);
 }
 

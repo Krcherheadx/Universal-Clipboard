@@ -2,13 +2,15 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
+import { Client, Stomp } from "@stomp/stompjs";
 import {
   ClipboardDocumentCheckIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";
-
+import * as stomp from "@stomp/stompjs";
 export default function DashboardPage() {
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [username, setUsername] = useState("");
   const [clipboards, setClipboards] = useState<
     { id: string; content: string; createdAt: Date }[]
   >([]);
@@ -16,29 +18,47 @@ export default function DashboardPage() {
   const [stompClient, setStompClient] = useState<Client | null>(null);
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
-    const client = new Client({
-      webSocketFactory: () => socket as any,
-      reconnectDelay: 5000,
-      onConnect: () => {
-     
-        client.subscribe("/topic/clips", (message) => {
-          if (message.body) {
-            const data: { content: string; createdAt: Date; id: string } =
-              JSON.parse(message.body);
-            setClipboards((prev) => [data, ...prev]);
-          }
-        });
-      },
-      onStompError: (frame) => {
-        console.error("Broker error:", frame.headers["message"]);
-      },
-    });
+    // Set username from localStorage on client only
+    setUsername(localStorage.getItem("username") || "");
+
+    setShowWelcome(true);
+    const timer = setTimeout(() => setShowWelcome(false), 3000);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("يرجى تسجيل الدخول أولاً.");
+      window.location.href = "/login";
+      return;
+    }
+
+    const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
+    const client = Stomp.over(socket);
+
+    client.connectHeaders = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    client.onConnect = () => {
+      client.subscribe("/app/user/clips", (message) => {
+        if (message.body) {
+          const data: { content: string; createdAt: Date; id: string } =
+            JSON.parse(message.body);
+          setClipboards((prev) => [data, ...prev]);
+        }
+      });
+    };
+
+    client.onStompError = (frame) => {
+      alert("انتهت صلاحية الجلسة أو حدث خطأ. يرجى تسجيل الدخول مرة أخرى.");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      console.error("Broker error:", frame.headers["message"]);
+    };
 
     client.activate();
     setStompClient(client);
 
     return () => {
+      clearTimeout(timer);
       client.deactivate();
     };
   }, []);
@@ -73,6 +93,11 @@ export default function DashboardPage() {
       className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 flex items-center justify-center p-6 font-[Rubik]"
       dir="rtl"
     >
+      {showWelcome && (
+        <div className="fixed top-8 right-1/2 translate-x-1/2 bg-indigo-500 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-bold z-50 font-[Rubik]">
+          {`مرحباً بك يا ${username}!`}
+        </div>
+      )}
       <motion.div
         className="max-w-xl w-full mx-auto bg-white/60 backdrop-blur-lg rounded-2xl shadow-2xl ring-1 ring-slate-200 p-8 space-y-6 border border-slate-300"
         initial={{ opacity: 0, y: 30 }}

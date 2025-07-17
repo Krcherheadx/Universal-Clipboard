@@ -9,9 +9,26 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignup = () => {
-    localStorage.setItem("username", username);
-    router.push("/dashboard");
+  const handleSignup = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("فشل إنشاء الحساب");
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // assuming response is { token: "..." }
+      localStorage.setItem("username", username);
+      router.push("/dashboard");
+    } catch (err) {
+      alert("خطأ في إنشاء الحساب");
+      console.error(err);
+    }
   };
 
   return (
@@ -50,6 +67,12 @@ export default function SignupPage() {
           className="w-full bg-emerald-500/80 hover:bg-emerald-500 text-white font-semibold py-2.5 px-5 rounded-xl shadow transition font-[Rubik]"
         >
           إنشاء حساب
+        </button>
+        <button
+          onClick={() => router.push("/login")}
+          className="w-full mt-2 bg-indigo-500/80 hover:bg-indigo-500 text-white font-semibold py-2.5 px-5 rounded-xl shadow transition font-[Rubik]"
+        >
+          تسجيل الدخول
         </button>
       </motion.div>
     </div>

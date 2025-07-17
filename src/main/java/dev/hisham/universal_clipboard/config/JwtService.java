@@ -17,32 +17,49 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-@Value("${SECRET_KEY}:m")
-    private static  String SECRET_KEY;
-public String extarctUsername (String jwtToken){
+    @Value("${SECRET_KEY}")
+    private String SECRET_KEY;
 
-return extractClaims(jwtToken,Claims::getSubject);
-}
-public String generateJwtToken(UserDetails user){
-    return generateJwtToken(new HashMap<>(),user);
-}
-public boolean validateJwtToken(String jwtToken,UserDetails user){
-    final String username = extarctUsername(jwtToken);
-    return (username.equals(user.getUsername()));
-}
-public String generateJwtToken (Map<String,Object> claims, UserDetails user){
-    return Jwts.builder().setClaims(claims).setSubject(user.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).signWith(getSignedKey(), SignatureAlgorithm.HS256).compact();
-}
-public <T> T extractClaims(String jwtToken, Function<Claims, T> claimsExtractor){
-    final Claims claims= extractAllClaims(jwtToken);
-    return claimsExtractor.apply(claims);
-}
-private Claims extractAllClaims(String jwtToken){
-    return Jwts.parser().setSigningKey(getSignedKey()).build().parseClaimsJws(jwtToken).getBody();
-}
-public Key getSignedKey(){
-    byte[] keyBytes = Decoders.BASE64.decode(JwtService.SECRET_KEY);
-    return Keys.hmacShaKeyFor(keyBytes);
-}
+    public String extractUsername(String jwtToken) {
+
+        return extractClaims(jwtToken, Claims::getSubject);
+    }
+
+    public String generateJwtToken(UserDetails user) {
+        return generateJwtToken(new HashMap<>(), user);
+    }
+
+    public boolean validateJwtToken(String jwtToken, UserDetails user) {
+        final String username = extractUsername(jwtToken);
+        return (username.equals(user.getUsername()));
+    }
+
+    public boolean validateJwtToken(String token) {
+        try {
+            String username = extractUsername(token);
+            return username != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public String generateJwtToken(Map<String, Object> claims, UserDetails user) {
+        return Jwts.builder().setClaims(claims).setSubject(user.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).signWith(getSignedKey(), SignatureAlgorithm.HS256).compact();
+    }
+
+    public <T> T extractClaims(String jwtToken, Function<Claims, T> claimsExtractor) {
+        final Claims claims = extractAllClaims(jwtToken);
+        return claimsExtractor.apply(claims);
+    }
+
+    private Claims extractAllClaims(String jwtToken) {
+        return Jwts.parser().setSigningKey(getSignedKey()).build().parseClaimsJws(jwtToken).getBody();
+    }
+
+    public Key getSignedKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(this.SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
 }

@@ -1,32 +1,15 @@
 package dev.hisham.universal_clipboard.controller;
 
-import dev.hisham.universal_clipboard.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user/security")//It seems that you can only register request mapper
+@RequestMapping("/user")//It seems that you can only register request mapper
 @RequiredArgsConstructor
 public class UserController {
 
-
-    private final UserService userService;
-
-
-    @GetMapping("/security")
-    public String Security() {
-        return "Security";
-    }
-//
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @PostMapping("/signup")
-//    public ResponseEntity<AuthenticationResponse> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
-//
-//    }
-//
-//    @PostMapping("/login")
-//    public ResponseEntity<AuthenticationResponse> authUser()
+//    @MessageMapping("/user.connect")
+//    public void prntConnected(@Payload )
 
 }
